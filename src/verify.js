@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import { Principal } from '@dfinity/principal';
+import { lebDecode, PipeArrayBuffer } from "@dfinity/candid";
 import { Cbor, Certificate, lookup_path, reconstruct, hashTreeToString } from '@dfinity/agent';
 import { Actor, HttpAgent } from '@dfinity/agent';
 import { idlFactory } from './declarations/ic-certified-blockchain/ic-certified-blockchain.did.js';
@@ -78,7 +79,7 @@ async function getCertificateDate(block, canisterId) {
   let canisterIdPrincipal = Principal.fromText(canisterId);
   const cert = await Certificate.create({
       certificate: block.certificate,
-      canisterId,
+      canisterId: canisterIdPrincipal,
       rootKey: IC_ROOT_KEY,
   });
   const time = cert.lookup(["time"]);
@@ -232,4 +233,5 @@ if (!await verifyIcCertifiedBlockChainEntry(block, entry_index, canisterId)) {
   console.log('block does not verify');
   process.exit(1);
 }
-console.log('block and entry verified!');
+console.log('Internet Computer NNS Public Key Signature Chain Verified at time:', await getCertificateDate(block, canisterId));
+console.log('Block and Entry Verified!');
