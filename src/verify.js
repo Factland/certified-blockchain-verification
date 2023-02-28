@@ -86,8 +86,20 @@ async function getCertificateDate(block, canisterId) {
 }
 
 function getBlockEntryIndex(block, entry) {
+  console.log(entry);
   for (var i in block.data) {
+    console.log(i, block.data[i]);
     if (isBufferEqual(entry, block.data[i])) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+function getBlockEntryIndexFromHash(block, hash) {
+  for (var i in block.data) {
+    console.log(i, block.data[i]);
+    if (isBufferEqual(hash, new Uint8Array(fromHex(sha256(block.data[i]))))) {
       return i;
     }
   }
@@ -211,15 +223,17 @@ if (process.argv[3]) {
 
 let block;
 if (hash) {
-  let hash_bytes = new Uint8Array(fromHex(sha256(entry)));
-  block_index = actor.find(hash_bytes);
+  let hash_bytes = new Uint8Array(fromHex(hash));
+  block_index = await actor.find(hash_bytes);
   if (block_index.length < 1) {
     console.log('hash', hash, 'not found');
     process.exit(1);
   }
+  console.log(block_index);
   block_index = block_index[0];
+  console.log(block_index);
   block = await actor.get_block(block_index);
-  entry_index = getBlockEntryIndex(block, hash_byes);
+  entry_index = getBlockEntryIndexFromHash(block, hash_bytes);
   if (entry_index < 0) {
     console.log('hash', hash, 'not found in block');
     process.exit(1);
