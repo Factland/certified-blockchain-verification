@@ -234,4 +234,4 @@ if (!await verifyIcCertifiedBlockChainEntry(block, entry_index, canisterId)) {
   console.log('block does not verify');
   process.exit(1);
 }
-console.log('block verified!');
+console.log('block and entry verified!');

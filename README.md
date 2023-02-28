@@ -83,4 +83,20 @@ The `certificate` is the signature chain from the Internet Computer NNS public k
 
 ### Verifiying Records
 
-kkkkkkk
+Records can be verified by block and entry numbers or by hash:
+
+```bash
+% node verify.js 0 0
+```
+
+or
+
+```bash
+% node verify.js eb805391933c1de0d69a22b250e524b4b716e908d3adb598fe5a750da8128a08
+```
+
+Correctly verfied blocks will report:
+
+```
+block and entry verified!
+```
