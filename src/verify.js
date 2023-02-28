@@ -86,9 +86,7 @@ async function getCertificateDate(block, canisterId) {
 }
 
 function getBlockEntryIndex(block, entry) {
-  console.log(entry);
   for (var i in block.data) {
-    console.log(i, block.data[i]);
     if (isBufferEqual(entry, block.data[i])) {
       return i;
     }
@@ -98,7 +96,6 @@ function getBlockEntryIndex(block, entry) {
 
 function getBlockEntryIndexFromHash(block, hash) {
   for (var i in block.data) {
-    console.log(i, block.data[i]);
     if (isBufferEqual(hash, new Uint8Array(fromHex(sha256(block.data[i]))))) {
       return i;
     }
@@ -111,9 +108,6 @@ async function verifyIcCertifiedBlockChainEntry(block, entry_index, canisterId, 
   let caller = block.callers[entry_index];
   entry_index = toBEBytesUint32(entry_index);
   const canisterIdPrincipal = Principal.fromText(canisterId);
-  console.log(block.certificate);
-  console.log(canisterId);
-  console.log(rootKey);
   let cert;
   try {
     cert = await Certificate.create({
@@ -134,18 +128,10 @@ async function verifyIcCertifiedBlockChainEntry(block, entry_index, canisterId, 
     console.log('CertifiedData does not match tree hash');
     return false;
   }
-  console.log('entry_index', entry_index);
   let certified_entry_hash = lookup_path(["certified_blocks", entry_index], block_tree);
-  console.log('entry', entry);
-  console.log('caller', caller.toUint8Array());
-  console.log('sha256(entry)', new Uint8Array(fromHex(sha256(entry))));
-  console.log('sha256(caller)', new Uint8Array(fromHex(sha256(caller.toUint8Array()))));
   let caller_entry = new Uint8Array(concat(new Uint8Array(fromHex(sha256(caller.toUint8Array()))), new Uint8Array(fromHex(sha256(entry)))));
-  console.log('sha256(caller) + sha256(entry)', caller_entry);
   const entry_hash = new Uint8Array(fromHex(sha256(caller_entry)));
   certified_entry_hash = new Uint8Array(certified_entry_hash);
-  console.log('certified_entry_hash', certified_entry_hash);
-  console.log('entry_hash', entry_hash);
   if (!isBufferEqual(certified_entry_hash, entry_hash)) {
     console.log('Certified block entry hash does not match block entry hash');
     return false;
@@ -229,9 +215,7 @@ if (hash) {
     console.log('hash', hash, 'not found');
     process.exit(1);
   }
-  console.log(block_index);
   block_index = block_index[0];
-  console.log(block_index);
   block = await actor.get_block(block_index);
   entry_index = getBlockEntryIndexFromHash(block, hash_bytes);
   if (entry_index < 0) {
