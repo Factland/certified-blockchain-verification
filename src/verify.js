@@ -95,7 +95,6 @@ function getBlockEntryIndex(block, entry) {
 
 function getBlockEntryIndexFromHash(block, hash) {
   for (var i in block.data) {
-    console.log(i, hash, new Uint8Array(fromHex(sha256(block.data[i]))));
     if (isBufferEqual(hash, new Uint8Array(fromHex(sha256(block.data[i]))))) {
       return i;
     }
