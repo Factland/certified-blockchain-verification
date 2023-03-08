@@ -22,7 +22,8 @@ Validate:
 
 Factland data is stored on the [Internet Computer](https://internetcomputer.org) in a canister smart contract:
 
-* **Canister ID:** 6nlm3-giaaa-aaaae-qaepq-cai
+* **Production Canister ID:** 6nlm3-giaaa-aaaae-qaepq-cai
+* **Staging Canister ID:** 3nump-2aaaa-aaaae-qaesa-cai
 * **Source Code:** https://github.com/Factland/ic-certified-blockchain.git
 * **Dashboard URL:** https://dashboard.internetcomputer.org/canister/6nlm3-giaaa-aaaae-qaepq-cai
 
@@ -53,7 +54,7 @@ Each adjudicated claim has a key assocated with it which appears in the Factland
 `B_2_0_fbaa85233700a8ed1795abe1b11ce7b78c102b953cab07871f49b3fefed40397`
 
 where the `B_` prefix indicates that this is a staging adjudicated claim, the `2_0_` indicates that the
-record of this claim is in block `3` entry `8`.  The suffix `fbaa85233700a8ed1795abe1b11ce7b78c102b953cab07871f49b3fefed40397`
+record of this claim is in block `2` entry `0`.  The suffix `fbaa85233700a8ed1795abe1b11ce7b78c102b953cab07871f49b3fefed40397`
 is the hash (SHA256) of the record.
 
 ## Block and Record Verification
