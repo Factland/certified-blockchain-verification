@@ -2,6 +2,22 @@
 
 Instructions and tools to download and verify Factland certified blockchain data.
 
+## Quick Start TL;DR
+
+Install nodejs: https://nodejs.org/en/download/
+
+Clone the repsitory:
+
+```bash
+% git clone https://github.com/Factland/certified-blockchain-verification.git
+```
+
+Validate:
+
+```bash
+% ./validate.sh B_2_0_fbaa85233700a8ed1795abe1b11ce7b78c102b953cab07871f49b3fefed40397
+```
+
 ## The Data
 
 Factland data is stored on the [Internet Computer](https://internetcomputer.org) in a canister smart contract:
@@ -34,10 +50,10 @@ blockchain and the methods available on the canister smart contract are detailed
 
 Each adjudicated claim has a key assocated with it which appears in the Factland app.  The key has the form:
 
-`A_3_8_eb805391933c1de0d69a22b250e524b4b716e908d3adb598fe5a750da8128a08`
+`B_2_0_fbaa85233700a8ed1795abe1b11ce7b78c102b953cab07871f49b3fefed40397`
 
-where the `A_` prefix indicates that this is a production adjudicated claim, the `3_8_` indicates that the
-record of this claim is in block `3` entry `8`.  The suffix `eb805391933c1de0d69a22b250e524b4b716e908d3adb598fe5a750da8128a08`
+where the `B_` prefix indicates that this is a staging adjudicated claim, the `2_0_` indicates that the
+record of this claim is in block `3` entry `8`.  The suffix `fbaa85233700a8ed1795abe1b11ce7b78c102b953cab07871f49b3fefed40397`
 is the hash (SHA256) of the record.
 
 ## Block and Record Verification
@@ -83,16 +99,10 @@ The `certificate` is the signature chain from the Internet Computer NNS public k
 
 ### Verifiying Records
 
-Records can be verified by block and entry numbers or by hash:
+Records are verified by key, including block and entry numbers and hash:
 
 ```bash
-% node verify.js 0 0
-```
-
-or
-
-```bash
-% node verify.js eb805391933c1de0d69a22b250e524b4b716e908d3adb598fe5a750da8128a08
+% node verify.js B_2_0_fbaa85233700a8ed1795abe1b11ce7b78c102b953cab07871f49b3fefed40397
 ```
 
 Correctly verfied blocks will report:

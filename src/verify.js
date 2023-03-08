@@ -11,10 +11,10 @@ global.fetch = fetch;
 
 const IC_ROOT_KEY = new Uint8Array([48, 129, 130, 48, 29, 6, 13, 43, 6, 1, 4, 1, 130, 220, 124, 5, 3, 1, 2, 1, 6, 12, 43, 6, 1, 4, 1, 130, 220, 124, 5, 3, 2, 1, 3, 97, 0, 129, 76, 14, 110, 199, 31, 171, 88, 59, 8, 189, 129, 55, 60, 37, 92, 60, 55, 27, 46, 132, 134, 60, 152, 164, 241, 224, 139, 116, 35, 93, 20, 251, 93, 156, 12, 213, 70, 217, 104, 95, 145, 58, 12, 11, 44, 197, 52, 21, 131, 191, 75, 67, 146, 228, 103, 219, 150, 214, 91, 155, 180, 203, 113, 113, 18, 248, 71, 46, 13, 90, 77, 20, 80, 95, 253, 116, 132, 176, 18, 145, 9, 28, 95, 135, 185, 136, 131, 70, 63, 152, 9, 26, 11, 170, 174]);
 
-// Staging
-const canisterId = "3nump-2aaaa-aaaae-qaesa-cai";
-// Production
-// const canisterId = "6nlm3-giaaa-aaaae-qaepq-cai";
+const canisterIds = new Map();
+
+canisterIds.set('A', '6nlm3-giaaa-aaaae-qaepq-cai');
+canisterIds.set('B', '3nump-2aaaa-aaaae-qaesa-cai');
 
 const url = "https://ic0.app";
 
@@ -27,8 +27,6 @@ export const createActor = (idlFactory, canisterId, options) => {
     ...(options ? options.actorOptions : {}),
   });
 };
-
-let actor = createActor(idlFactory, canisterId, { agentOptions: { host: url }});
 
 function toHex(buffer) { // buffer is an ArrayBuffer
   return [...new Uint8Array(buffer)]
@@ -97,6 +95,7 @@ function getBlockEntryIndex(block, entry) {
 
 function getBlockEntryIndexFromHash(block, hash) {
   for (var i in block.data) {
+    console.log(i, hash, new Uint8Array(fromHex(sha256(block.data[i]))));
     if (isBufferEqual(hash, new Uint8Array(fromHex(sha256(block.data[i]))))) {
       return i;
     }
@@ -192,46 +191,52 @@ export async function getAndPrintBlockContainingEntry(entry, canisterId) {
   printBlock(block);
 }
 
-let block_index = 0;
-let entry_index = 0;
-let hash;
-
-if (process.argv[3]) {
-  block_index = Number(process.argv[2]);
-  entry_index = Number(process.argv[3]);
-} else if (process.argv[2]) {
-  hash = process.argv[2];
+let key;
+if (process.argv[2]) {
+  key = process.argv[2];
 } else {
-  console.log('Usage: node verify.js (<block_index> <entry_index> | <entry_hash>)');
-  console.log('  e.g. node verify.js 1 3');
-  console.log('  e.g. node verify.js eb805391933c1de0d69a22b250e524b4b716e908d3adb598fe5a750da8128a08');
+  console.log('Usage: node verify.js <key> (e.g. A_3_8_eb805391933c1de0d69a22b250e524b4b716e908d3adb598fe5a750da8128a08');
   process.exit(1);
 }
 
-let block;
-if (hash) {
-  let hash_bytes = new Uint8Array(fromHex(hash));
-  block_index = await actor.find(hash_bytes);
-  if (block_index.length < 1) {
-    console.log('hash', hash, 'not found');
-    process.exit(1);
-  }
-  block_index = block_index[0];
-  block = await actor.get_block(block_index);
-  entry_index = getBlockEntryIndexFromHash(block, hash_bytes);
-  if (entry_index < 0) {
-    console.log('hash', hash, 'not found in block');
-    process.exit(1);
-  }
-} else {
-  block = await actor.get_block(block_index);
+const keyRe = new RegExp(/([A-Z])_([0-9]+)_([0-9]+)_([A-Za-z0-9]+)/);
+let matches = keyRe.exec(key);
+let canister = matches[1];
+let block_index = Number(matches[2]);
+let entry_index = Number(matches[3]);
+let hash = matches[4];
+
+let actor = createActor(idlFactory, canisterIds.get(canister), { agentOptions: { host: url }});
+
+let hash_bytes = new Uint8Array(fromHex(hash));
+let hash_block_index = await actor.find(hash_bytes);
+if (hash_block_index.length < 1) {
+  console.log('error: hash', hash, 'not found');
+  process.exit(1);
+}
+hash_block_index = hash_block_index[0];
+if (hash_block_index != block_index) {
+  console.log('error: block index', block_index, 'does not match', hash, 'block index', hash_block_index);
+  process.exit(1);
+}
+let block = await actor.get_block(block_index);
+let hash_entry_index = getBlockEntryIndexFromHash(block, hash_bytes);
+if (hash_entry_index.length < 1) {
+  console.log('error: hash', hash, 'not found in block');
+  process.exit(1);
+}
+console.log(hash_entry_index);
+hash_entry_index = hash_entry_index[0];
+if (hash_entry_index != entry_index) {
+  console.log('error: entry index', entry_index, 'does not match', hash, 'entry index', hash_entry_index);
+  process.exit(1);
 }
 
 printBlock(block);
 
-if (!await verifyIcCertifiedBlockChainEntry(block, entry_index, canisterId)) {
+if (!await verifyIcCertifiedBlockChainEntry(block, entry_index, canisterIds.get(canister))) {
   console.log('block does not verify');
   process.exit(1);
 }
-console.log('Internet Computer NNS Public Key Signature Chain Verified at time:', await getCertificateDate(block, canisterId));
+console.log('Internet Computer NNS Public Key Signature Chain Verified at time:', await getCertificateDate(block, canisterIds.get((canister))));
 console.log('Block and Entry Verified!');
