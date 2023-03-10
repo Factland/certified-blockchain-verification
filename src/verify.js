@@ -173,7 +173,7 @@ function printBlock(block) {
   console.log('certificate tree', hashTreeToString(block_certificate.tree));
   console.log('certificate signature', toHex(block_certificate.signature));
   console.log('block tree', hashTreeToString(Cbor.decode(block.tree)));
-  console.log('data', block.data.map((x) => toHex(x)));
+  console.log('data', block.data.map((x) => new TextDecoder().decode(x)));
   console.log('callers', block.callers.map((x) => x.toText()));
   console.log('preivous_hash', toHex(block.previous_hash));
 }
