@@ -12,10 +12,10 @@ Clone the repsitory:
 % git clone https://github.com/Factland/certified-blockchain-verification.git
 ```
 
-Validate:
+verify::
 
 ```bash
-% ./validate.sh B_2_0_fbaa85233700a8ed1795abe1b11ce7b78c102b953cab07871f49b3fefed40397
+% ./verify.sh B_2_0_fbaa85233700a8ed1795abe1b11ce7b78c102b953cab07871f49b3fefed40397
 ```
 
 ### OSX
