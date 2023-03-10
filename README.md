@@ -18,6 +18,16 @@ Validate:
 % ./validate.sh B_2_0_fbaa85233700a8ed1795abe1b11ce7b78c102b953cab07871f49b3fefed40397
 ```
 
+### OSX
+
+You may need to install git [how to install git on a mac](https://git-scm.com/download/mac).
+
+You may need to install xcode:
+
+```bash
+xcode-select --install
+```
+
 ## The Data
 
 Factland data is stored on the [Internet Computer](https://internetcomputer.org) in a canister smart contract:
