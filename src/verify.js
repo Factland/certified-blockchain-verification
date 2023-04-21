@@ -85,7 +85,7 @@ async function getCertificateDate(block, canisterId) {
 }
 
 function getBlockEntryIndex(block, entry) {
-  for (var i in block.data) {
+  for (var i = 0; i < block.data.length; i++) {
     if (isBufferEqual(entry, block.data[i])) {
       return i;
     }
@@ -94,7 +94,7 @@ function getBlockEntryIndex(block, entry) {
 }
 
 function getBlockEntryIndexFromHash(block, hash) {
-  for (var i in block.data) {
+  for (var i = 0; i < block.data.length; i++) {
     if (isBufferEqual(hash, new Uint8Array(fromHex(sha256(block.data[i]))))) {
       return i;
     }
@@ -175,7 +175,7 @@ function printBlock(block) {
   console.log('block tree', hashTreeToString(Cbor.decode(block.tree)));
   console.log('data', block.data.map((x) => new TextDecoder().decode(x)));
   console.log('callers', block.callers.map((x) => x.toText()));
-  console.log('preivous_hash', toHex(block.previous_hash));
+  console.log('previous_hash', toHex(block.previous_hash));
 }
 
 export async function getAndPrintBlockContainingEntry(entry, canisterId) {
@@ -213,20 +213,18 @@ if (hash_block_index.length < 1) {
   console.log('error: hash', hash, 'not found');
   process.exit(1);
 }
-hash_block_index = hash_block_index[0];
-if (hash_block_index != block_index) {
+hash_block_index = Number(hash_block_index[0]);
+if (hash_block_index !== block_index) {
   console.log('error: block index', block_index, 'does not match', hash, 'block index', hash_block_index);
   process.exit(1);
 }
 let block = await actor.get_block(block_index);
 let hash_entry_index = getBlockEntryIndexFromHash(block, hash_bytes);
-if (hash_entry_index.length < 1) {
+if (hash_entry_index < 0) {
   console.log('error: hash', hash, 'not found in block');
   process.exit(1);
 }
-console.log(hash_entry_index);
-hash_entry_index = hash_entry_index[0];
-if (hash_entry_index != entry_index) {
+if (hash_entry_index !== entry_index) {
   console.log('error: entry index', entry_index, 'does not match', hash, 'entry index', hash_entry_index);
   process.exit(1);
 }
