@@ -44,7 +44,7 @@ if (process.argv[2]) {
   canister = matches[1];
   block_number = Number(matches[2]);
 } else {
-  console.log('Usage: node print_block.js 0');
+  console.log('Usage: node print_block.js A5');
   process.exit(1);
 }
 

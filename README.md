@@ -89,7 +89,7 @@ download of this code and installation of the dependencies:
 Blocks can be printed (in the src directory) by executing:
 
 ```bash
-% node print_block.js 0
+% node print_block.js B0
 ```
 
 This will produce output like:
